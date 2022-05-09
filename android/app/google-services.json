@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "673025131979",
+    "project_id": "note-firestore-2566b",
+    "storage_bucket": "note-firestore-2566b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:673025131979:android:67c766ae172fd52750e24e",
+        "android_client_info": {
+          "package_name": "com.pankajkcodes.notefirestore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "673025131979-halb4m9oe78gkncupttcjb9880h23ef7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVFiuug21vW6pKXWS2KfN_cJG3aHmhpiE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "673025131979-halb4m9oe78gkncupttcjb9880h23ef7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
