@@ -54,15 +54,15 @@ class _AddNotePageState extends State<AddNotePage> {
                 margin: const EdgeInsets.symmetric(vertical: 10.0),
                 child: TextFormField(
                   autofocus: false,
+                  minLines: 5,
+                  maxLines: 7,
                   decoration: const InputDecoration(
-                    labelText: 'Description: ',
                     labelStyle: TextStyle(fontSize: 20.0),
                     border: OutlineInputBorder(),
                     errorStyle:
                         TextStyle(color: Colors.redAccent, fontSize: 15),
                   ),
                   controller: descriptionController,
-               
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Can Not be Empty';
@@ -83,6 +83,7 @@ class _AddNotePageState extends State<AddNotePage> {
                           description = descriptionController.text;
                           addNote();
                           clearText();
+                          Navigator.pop(context);
                         });
                       }
                     },
@@ -119,6 +120,7 @@ class _AddNotePageState extends State<AddNotePage> {
   Future<void> addNote() {
     return note
         .add({
+          'id':DateTime.now().millisecondsSinceEpoch,
           'title': title,
           'description': description,
         })

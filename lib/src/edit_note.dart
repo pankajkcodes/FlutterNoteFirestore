@@ -2,15 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class EditNotePage extends StatefulWidget {
-  const EditNotePage({Key? key}) : super(key: key);
+  final String id;
+  const EditNotePage({Key? key, required this.id}) : super(key: key);
 
   @override
   State<EditNotePage> createState() => _EditNotePageState();
 }
 
 class _EditNotePageState extends State<EditNotePage> {
-
-    final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   var title = "";
   var description = "";
@@ -18,95 +18,15 @@ class _EditNotePageState extends State<EditNotePage> {
   // of the TextField.
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
+  //  Updaing Student  //
+  CollectionReference students = FirebaseFirestore.instance.collection('notes');
 
-  @override
-  Widget build(BuildContext context) {
-  return Scaffold(
-      appBar: AppBar(
-        title: const Text("Edit Note"),
-      ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-          child: ListView(
-            children: [
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 10.0),
-                child: TextFormField(
-                  autofocus: false,
-                  decoration: const InputDecoration(
-                    labelText: 'Title: ',
-                    labelStyle: TextStyle(fontSize: 20.0),
-                    border: OutlineInputBorder(),
-                    errorStyle:
-                        TextStyle(color: Colors.redAccent, fontSize: 15),
-                  ),
-                  controller: titleController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Can not be empty';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 10.0),
-                child: TextFormField(
-                  autofocus: false,
-                  decoration: const InputDecoration(
-                    labelText: 'Description: ',
-                    labelStyle: TextStyle(fontSize: 20.0),
-                    border: OutlineInputBorder(),
-                    errorStyle:
-                        TextStyle(color: Colors.redAccent, fontSize: 15),
-                  ),
-                  controller: descriptionController,
-               
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Can Not be Empty';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      // Validate returns true if the form is valid, otherwise false.
-                      if (_formKey.currentState!.validate()) {
-                        setState(() {
-                          title = titleController.text;
-                          description = descriptionController.text;
-                          updateNote();
-                          clearText();
-                        });
-                      }
-                    },
-                    child: const Text(
-                      'Save',
-                      style: TextStyle(fontSize: 18.0),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => {clearText()},
-                    child: const Text(
-                      'Reset',
-                      style: TextStyle(fontSize: 18.0),
-                    ),
-                    style: ElevatedButton.styleFrom(primary: Colors.blueGrey),
-                  ),
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+  Future<void> updateUser(id, title, description) {
+    return students
+        .doc(id)
+        .update({'title': title, 'description': description})
+        .then((value) => print("Note Updated"))
+        .catchError((error) => print("Failed to update : $error"));
   }
 
   clearText() {
@@ -114,16 +34,115 @@ class _EditNotePageState extends State<EditNotePage> {
     descriptionController.clear();
   }
 
-// Adding Student
-  CollectionReference note = FirebaseFirestore.instance.collection('notes');
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Update Note"),
+      ),
+      body: Form(
+          key: _formKey,
+          // Getting Specific Data by ID
+          child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+            future: FirebaseFirestore.instance
+                .collection('notes')
+                .doc(widget.id)
+                .get(),
+            builder: (_, snapshot) {
+              if (snapshot.hasError) {
+                print('Something Went Wrong');
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              var data = snapshot.data!.data();
+              var title = data!['title'];
+              var description = data['description'];
 
-  Future<void> updateNote() {
-    return note
-        .add({
-          'title': title,
-          'description': description,
-        })
-        .then((value) => print('Note Added'))
-        .catchError((error) => print('Failed to Add Note: $error'));
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                child: ListView(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: TextFormField(
+                        initialValue: title,
+                        autofocus: false,
+                        onChanged: (value) => title = value,
+                        decoration: const InputDecoration(
+                          labelText: 'Title: ',
+                          labelStyle: TextStyle(fontSize: 20.0),
+                          border: OutlineInputBorder(),
+                          errorStyle:
+                              TextStyle(color: Colors.redAccent, fontSize: 15),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Can Not Be Empty';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: TextFormField(
+                        initialValue: title,
+                        autofocus: false,
+                        minLines: 5,
+                        maxLines: 7,
+                        onChanged: (value) => title = value,
+                        decoration: const InputDecoration(
+                          labelStyle: TextStyle(fontSize: 20.0),
+                          border: OutlineInputBorder(),
+                          errorStyle:
+                              TextStyle(color: Colors.redAccent, fontSize: 15),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Can Not Be Empty';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            // Validate returns true if the form is valid, otherwise false.
+                            if (_formKey.currentState!.validate()) {
+                              updateUser(widget.id, title, description);
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: const Text(
+                            'Update',
+                            style: TextStyle(fontSize: 18.0),
+                          ),
+                        ),
+                        // ElevatedButton(
+                        //   onPressed: () => {
+                        //     clearText()
+                        //   },
+                        //   child: const Text(
+                        //     'Reset',
+                        //     style: TextStyle(fontSize: 18.0),
+                        //   ),
+                        //   style: ElevatedButton.styleFrom(
+                        //       primary: Colors.blueGrey),
+                        // ),
+                      ],
+                    )
+                  ],
+                ),
+              );
+            },
+          )),
+    );
   }
 }
